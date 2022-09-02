@@ -1,0 +1,7 @@
+micronaut:
+  application:
+    name: macropad
+search:
+  url: https://stackoverflow.com/search?q=
+  # https://docs.oracle.com/en/java/javase/11/docs/api/java.desktop/javax/swing/KeyStroke.html#getKeyStroke(java.lang.String)
+  hotkey: ctrl alt 1

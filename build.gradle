@@ -1,0 +1,83 @@
+plugins {
+    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("io.micronaut.application") version "3.4.1"
+    id("me.qoomon.git-versioning") version '6.3.0'
+}
+
+repositories {
+    mavenCentral()
+}
+
+group = "dev.dobicinaitis"
+version = '0.0.0'
+ext.appBuild = 'undefined'
+jar.enabled = false
+
+// get version and build number from git
+gitVersioning.apply {
+    refs {
+        considerTagsOnBranches = true
+        tag('v(?<version>.*)') {
+            version = '${ref.version}'
+            properties_ = ['appBuild': '${commit.short}${dirty}']
+        }
+        branch('.+') {
+            describeTagPattern = 'v(?<version>.*)'
+            version = '${describe.tag.version}-SNAPSHOT'
+            properties_ = ['appBuild': '${commit.short}${dirty}']
+        }
+    }
+    // fallback configuration in case no matching git refs
+    rev {
+        version = '${version}-SNAPSHOT'
+        properties_ = ['appBuild': '${commit.short}${dirty}']
+    }
+}
+
+dependencies {
+    implementation("info.picocli:picocli")
+    implementation("io.micronaut.picocli:micronaut-picocli:4.3.0")
+    annotationProcessor("org.projectlombok:lombok")
+    annotationProcessor("info.picocli:picocli-codegen")
+    compileOnly("org.projectlombok:lombok")
+    implementation("ch.qos.logback:logback-classic")
+    implementation("com.github.tulskiy:jkeymaster:1.3")
+}
+
+application {
+    mainClass.set("dev.dobicinaitis.macropad.MacropadApplication")
+}
+
+java {
+    sourceCompatibility = JavaVersion.toVersion("11")
+    targetCompatibility = JavaVersion.toVersion("11")
+}
+
+micronaut {
+    testRuntime("junit5")
+    processing {
+        incremental(true)
+        annotations("dev.dobicinaitis.*")
+    }
+}
+
+def appVersion = version
+shadowJar {
+    archiveVersion = "${appVersion}"
+    classifier = null // remove "-all" suffix
+    manifest {
+        attributes(
+                'Application-Version': "${appVersion}",
+                'Application-Build': "${appBuild}"
+        )
+    }
+}
+
+build.doLast {
+    // remove redundant artifacts
+    delete fileTree(dir: "${project.buildDir}/libs/", include: "${rootProject.name}**runner.jar")
+    // // update version in README file
+    // ant.replaceregexp(match: "${rootProject.name}-(?!${appVersion}).*.jar", replace: "${rootProject.name}-${appVersion}.jar", flags: 'g', byline: true) {
+    //     fileset(dir: '.', includes: 'README.md')
+    // }
+}
