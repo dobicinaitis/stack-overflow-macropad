@@ -68,20 +68,17 @@ You have 2 options for letting the app know when to open Stack Overflow:
 * Global shortcut
 
 #### Daemon mode
-Run the app with `--daemon` option. It will listen for the hotkey keystrokes and open Stack Overflow whenever The Key is pressed.  
-
-You can also add the app to your OS's application startup list or task scheduler to start it automatically.
-
-Linux example:
+Run the app with `--daemon` option. It will listen for hotkey keystrokes and open Stack Overflow whenever The Key is pressed.
 ```shell
-crontab -e
-
-# start The Key companion app
-@reboot java -jar PATH_TO_APP_DIR/macropad-0.1.0.jar --daemon > /dev/null 2>&1
+java -jar macropad-0.1.0.jar --daemon
 ```
 
+You can also add the app to your OS's application startup list to launch it automatically at login.
+
+Ubuntu [guide](doc/how-to-add-to-startup-application-list-on-ubuntu.md).
+
 #### Global shortcut
-Use tools provided by your OS to configure a keyboard shortcut that runs `java -jar PATH_TO_APP_DIR/macropad-0.1.0.jar` when `ctrl`+`alt`+`1` is pressed.
+Use tools provided by your OS to configure a keyboard shortcut that executes `java -jar PATH_TO_APP_DIR/macropad-0.1.0.jar` when `ctrl`+`alt`+`1` is pressed.
 
 Ubuntu [guide](https://help.ubuntu.com/stable/ubuntu-help/keyboard-shortcuts-set.html.en).
 
